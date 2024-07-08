@@ -1,0 +1,243 @@
+---
+title: "roam: Remote Objects with Active-binding Magic"
+author: Mitchell O'Hara-Wild\newline Yangzhuoran Fin Yang
+titlegraphic: bg-13.png
+titlecolor: white
+toc: false
+keep-tex: true
+format:
+  presentation-beamer: 
+    template-partials:
+        - before-title.tex
+    include-in-header: 
+      text: \newcommand{\theHtable}{\thetable}
+execute: 
+  eval: false
+  echo: true
+---
+
+
+## Including data in a package __without__ `roam`
+
+\vspace{-20pt}
+
+:::: {layout="[ 50,-2, 50 ]"}
+
+::: {#1col}
+::: {.callout-note}
+### Package `pkg` Writer
+
+```r
+# data-raw/bee.R
+library(readr)
+bee <- read_csv(<bee.csv>)
+usethis::use_data(bee)
+```
+
+\vspace{115pt}
+<!-- \pause -->
+
+<!-- ::: {.callout-important} -->
+
+<!-- - Data installed with the package -->
+<!-- - CRAN Size limit 5 MB -->
+<!-- - Update package to update data -->
+<!-- ::: -->
+
+:::
+
+:::
+
+::: {.callout-tip}
+### User
+
+```{r}
+#| echo: false
+#| eval: true
+bee <- readr::read_csv("https://raw.githubusercontent.com/finyang/roam/master/demo/bee_colonies.csv")
+```
+```{r}
+#| eval: false
+library(pkg)
+bee
+```
+```{r}
+#| eval: true
+#| echo: false
+print(dplyr::select(bee, -1), width = 30, n=2)
+```
+
+
+:::
+
+::::
+
+\only<2>{\begin{textblock}{6}(1.4,5)\fontsize{12}{13}\sf
+\begin{alertblock}{}
+\begin{itemize}
+\tightlist
+\item
+Data included in package
+\item
+CRAN size limit 5 MB
+\item
+The data are updated only when the package is updated
+\end{itemize}
+\end{alertblock}
+\end{textblock}
+}
+
+## Including data in a package __with__ `roam`
+
+\vspace{-20pt}
+
+:::: {layout="[ 50,-2, 50 ]"}
+
+::: {#1col}
+::: {.callout-note}
+### Package `pkg` Writer
+
+```r
+obtainer <- function(version) 
+{
+  readr::read_csv(<bee.csv>)
+}
+
+bee <- roam::new_roam(
+  'pkg', 'bee', obtainer)
+
+.onLoad <- function(libname, 
+                    pkgname) 
+{
+  roam::roam_activate(bee)
+}
+
+```
+
+\vspace{9pt}
+
+:::
+
+:::
+
+::: {.callout-tip}
+### User
+
+```{r}
+#| eval: false
+library(pkg)
+options(roam.autodownload = TRUE)
+bee
+```
+```{r}
+#| eval: true
+#| echo: false
+print(dplyr::select(bee, -1), width = 30, n=1)
+```
+
+
+:::
+
+::::
+
+\only<2>{\begin{textblock}{6}(1.4,6)\fontsize{12}{13}\sf
+\begin{alertblock}{}
+\begin{itemize}
+\tightlist
+\item
+Data hosted remotely
+\item
+No size limit
+\item
+Updating data without updating package
+\end{itemize}
+\end{alertblock}
+\end{textblock}
+}
+
+
+## Versioning with `roam`
+
+\vspace{-20pt}
+
+:::: {layout="[ 50,-2, 50 ]"}
+
+::: {#1col}
+::: {.callout-note}
+### Package `pkg` Writer
+
+```r
+obtainer <- function(version) {
+  if(version == 'latest') 
+    version <- '0.1.0'
+  # Specify the version
+  roam::roam_set_version(version)
+  readr::read_csv(<bee-v.csv>)
+}
+
+bee <- roam::new_roam(
+  'pkg', 'bee', obtainer)
+
+.onLoad <- function(libname, 
+                    pkgname) 
+  roam::roam_activate(bee)
+
+```
+
+:::
+
+:::
+
+::: {.callout-tip}
+### User
+
+```r
+library(pkg)
+library(roam)
+
+# Update to the latest version
+roam_update(bee)
+
+# Install a specific version
+roam_install(bee, version = '0.1.0')
+
+# Delete local cache
+roam_delete(bee)
+
+# Find currently installed version
+roam_version('pkg', 'bee')
+```
+
+
+:::
+
+::::
+
+## More information
+
+### Roadmap: Cache multiple versions
+
+```r
+library(pkg)
+library(roam)
+
+bee %v% "0.1.0"
+bee %v% "0.1.1"
+```
+
+\only<2->{
+\placefig{0.7}{5}{width=3.5cm}{roam}
+\begin{textblock}{10.5}(4.5,4.8)
+\begin{alertblock}{}\fontsize{14}{17}\sf
+\textbf{Slides}: \href{https://yangzhuoranyang.com/talk/user-2024/}{yangzhuoranyang.com/talk/user-2024}
+
+\textbf{roam}: \href{https://github.com/FinYang/roam}{github.com/FinYang/roam}
+
+\href{https://yangzhuoranyang.com}{\faIcon{home}  yangzhuoranyang.com}
+
+\href{https://github.com/finyang}{\faIcon{github}  @finyang}
+
+\href{mailto:fin.yang@monash.edu}{\faIcon{envelope} fin.yang@monash.edu}
+\end{alertblock}
+\end{textblock}
+}
