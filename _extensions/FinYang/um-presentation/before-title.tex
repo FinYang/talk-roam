@@ -21,8 +21,8 @@ $endif$
       (current page.south west) rectangle (current page.north east);
     \end{tikzpicture}
   \end{textblock}
-  %   \placefig{8}{0.7}{width=3cm}{$titlelogo$}
-  \begin{textblock}{10}(1.4,2.2)\usebeamerfont{title}
+  $if(titlelogo)$\placefig{12}{1.5}{width=3cm}{$titlelogo$}$endif$
+  \begin{textblock}{12}(1.4,2)\usebeamerfont{title}
     {\color{$titlecolor$}\raggedright\par\inserttitle}
   \end{textblock}
   \begin{textblock}{8.7}(1.4,6)
