@@ -9,7 +9,7 @@ pdf-engine: xelatex
 execute: 
   eval: false
   echo: true
-  cache: true
+  cache: false
 include-in-header: 
   text: |
     \AddToHook{env/Highlighting/begin}{\normalsize}
